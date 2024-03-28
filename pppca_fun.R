@@ -17,9 +17,13 @@ pppca = function(PP,Jmax,mc.cores=24){
 			
 		eigenval   = PP_PC$values[1:Jmax]				
 
-  	K          = length(grid)
-		scores     = ((scale(Pi[,2:K],scale=F)*sqrt(as.numeric(dgrid)))%*%PP_PC$vectors[,1:Jmax])%*%diag(1/sqrt(PP_PC$values[1:Jmax]))
-		scores[,1] = sign(PP_PC$vectors[K/2,1])*scores[,1]
+ 		baseline_pmf     = apply(Pi,2,mean)[-nb_occ_total]
+    Pi_centered_norm = t(apply(Pi, 1, FUN=function(x){
+      (x[-nb_occ_total]-baseline_pmf)*sqrt(dgrid)
+    }))
+    scores     = Pi_centered_norm%*%PP_PC$vectors[,1:Jmax]
+    scores     = t(apply(scores,1,FUN=function(x){x/sqrt(eigenval)}))
+		scores[,1] = sign(PP_PC$vectors[nb_occ_total/2,1])*scores[,1]
 		scores     = as.data.frame(scores)
 		colnames(scores) = paste0("axis",c(1:Jmax))
 
@@ -56,7 +60,7 @@ get_pred_pmf = function(PP, eigenval, scores, eigenfun, mc.cores=24){
 	  y[which(gg %in% x)] = 1
 	  return(y)
 	},mc.cores=mc.cores)
-	baseline_pmf = cumsum(Reduce('+',PPbin))[-1]/n
+	baseline_pmf = cumsum(Reduce('+',PPbin))[-1]#/n
 	pred_pmf     = mcmapply(1:n,FUN=function(i){w_pred(i,baseline_pmf, eigenval, scores, eigenfun)},mc.cores=mc.cores)
 	return(pred_pmf)
 }
@@ -69,7 +73,7 @@ get_pred_int = function(PP, eigenval, scores, eigenfun, mc.cores=24){
 	  y[which(gg %in% x)] = 1
 	  return(y)
 	},mc.cores=mc.cores)
-	baseline_pmf = cumsum(Reduce('+',PPbin))[-1]/n
+	baseline_pmf = cumsum(Reduce('+',PPbin))[-1]#/n
 	pred_pmf     = mcmapply(1:n,FUN=function(i){w_pred(i,baseline_pmf, eigenval, scores, eigenfun)},mc.cores=mc.cores)
 	pred_int     = apply(pred_pmf,2,FUN=function(x){diff(x)})
 	return(pred_int)
