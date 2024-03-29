@@ -23,11 +23,15 @@ pppca = function(PP,Jmax,mc.cores=24){
     }))
     scores     = Pi_centered_norm%*%PP_PC$vectors[,1:Jmax]
     scores     = t(apply(scores,1,FUN=function(x){x/sqrt(eigenval)}))
-		scores[,1] = sign(PP_PC$vectors[nb_occ_total/2,1])*scores[,1]
+
+		change_sign = sign(PP_PC$vectors[nb_occ_total/2,1])
+
+		scores[,1] = change_sign*scores[,1]
 		scores     = as.data.frame(scores)
 		colnames(scores) = paste0("axis",c(1:Jmax))
 
 		eigenfun        = PP_PC$vectors[,1:Jmax]/sqrt(dgrid)
+		eigenfun[,1]    = change_sign*eigenfun[,1]
 		eigenfun        = data.frame(eigenfun)
 		names(eigenfun) = paste0("fun",c(1:Jmax))
 
