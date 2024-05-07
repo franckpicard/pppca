@@ -19,7 +19,7 @@ library(ggpubr)
 library(purrr)
 library(wesanderson)
 library(parallel)
-my_theme <- function(){
+my_theme <- function() {
   theme(   
     axis.line        = element_line(colour = "black"),
     strip.background = element_blank(),
@@ -37,8 +37,8 @@ my_theme <- function(){
     axis.text.y      = element_text(size=5)
   )
 }
-source("/home/picard/projets/pppca/pppca_fun.R")
-load(file="/home/picard/Dropbox/PCAforPointProcesses/numerical_study/vignette/earthquake_data.RData")
+source("pppca_fun.R")
+load(file="earthquake_data.RData")
 PP_num = lapply(PP, as.numeric)
 Jmax = 50
 res  = pppca(PP_num,Jmax)
