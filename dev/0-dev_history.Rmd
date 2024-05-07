@@ -11,20 +11,36 @@ All commands that you use to use when developing packages...
 
 - Fill the following chunk to create the DESCRIPTION of your package
 
-```{r description}
+```{r dev-description, eval=FALSE}
 # Describe your package
 fusen::fill_description(
   pkg = here::here(),
   fields = list(
-    Title = "Build A Package From Rmarkdown File",
-    Description = "Use Rmarkdown First method to build your package. Start your package with documentation. Everything can be set from a Rmarkdown file in your project.",
-    `Authors@R` = c(
-      person("John", "Doe", email = "john@email.me", role = c("aut", "cre"), comment = c(ORCID = "0000-0000-0000-0000"))
+        Title = stringr::str_to_title(
+            "Point Process Principal Component Analysis (PPPCA)"),
+        Description = 
+            "Implementation of Principal Component Analysis (PCA) 
+            for point process data.",
+        `Authors@R` = c(
+            person(
+                "Franck", "Picard", 
+                email = "franck.picard@ens-lyon.fr", 
+                role = c("aut"), 
+                comment = c(ORCID = "0000-0001-8084-5481")),
+            person(
+                "Ghislain", "Durif", email = "gd.dev@libertymail.net", 
+                role = c("aut", "cre"), 
+                comment = c(ORCID = "0000-0003-2567-1401"))
+        ),
+        URL = "https://github.com/franckpicard/pppca",
+        Version = "0.0.1",
+        "Date/Publication" = format(Sys.time(), "%Y/%m/%d")
     )
-  )
 )
 # Define License with use_*_license()
 usethis::use_mit_license("John Doe")
+# Roxygen markdown
+usethis::use_roxygen_md()
 ```
 
 # All-in-one function to deploy publicly on GitHub
@@ -40,72 +56,62 @@ fusen::init_share_on_github()
 
 # Start using git
 
-```{r, eval=FALSE}
-usethis::use_git()
+```{r dev-git, eval=FALSE}
 # Deal with classical files to ignore
 usethis::git_vaccinate()
-# Use main for primary branch
-usethis::git_default_branch_rename()
 ```
 
 # Set extra sources of documentation
 
-```{r, eval=FALSE}
-# Install a first time
-remotes::install_local()
+```{r dev-extra-doc, eval=FALSE}
 # README
 usethis::use_readme_rmd()
-# Code of Conduct
-usethis::use_code_of_conduct("contact@fake.com")
-# NEWS
-usethis::use_news_md()
 ```
 
 **From now, you will need to "inflate" your package at least once to be able to use the following commands. Let's go to your flat template, and come back here later if/when needed.**
 
 
 # Package development tools
+
 ## Use once
 
-```{r, eval=FALSE}
+```{r dev-extra-req, eval=FALSE}
 # Pipe
 usethis::use_pipe()
 
 # package-level documentation
 usethis::use_package_doc()
+```
 
-# GitHub
-# Add your credentials for GitHub
-usethis::create_github_token()
-gitcreds::gitcreds_set()
+## Inflate package
 
-# _Or one step at a time
-# Send your project to a new GitHub project (included in `init_share_on_github()`)
-usethis::use_github()
-
-# Set Continuous Integration
-# _GitHub (included in `init_share_on_github()`)
-usethis::use_github_action_check_standard()
-usethis::use_github_action("pkgdown")
-usethis::use_github_action("test-coverage")
-# _GitLab
-gitlabr::use_gitlab_ci(type = "check-coverage-pkgdown")
+```{r dev-inflate}
+fusen::inflate_all()
 ```
 
 ## Use everytime needed
 
-```{r, eval=FALSE}
+```{r dev-doc, eval=FALSE}
 # Simulate package installation
 pkgload::load_all()
 
 # Generate documentation and deal with dependencies
 attachment::att_amend_desc()
+```
 
+```{r dev-check}
+# Test the package
+devtools::test()
+```
+
+```{r dev-check}
+# Check the package documentation
+devtools::check_man()
+```
+
+```{r dev-check}
 # Check the package
 devtools::check()
-
-# Add a new flat template
-fusen::add_flat_template("add")
 ```
 
 # Share the package
