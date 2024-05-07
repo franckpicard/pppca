@@ -1,0 +1,59 @@
+---
+title: "Implement internal functions"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r development, include=FALSE}
+library(testthat)
+```
+
+```{r development-load}
+# Load already included functions if relevant
+pkgload::load_all(export_all = FALSE)
+```
+
+## Build predictive PMF from eigen decomposition
+
+Karhunen–Loève decomposition
+
+```{r function-build-predictive-pmf}
+#' Build predictive PMF from Karhunen–Loève decomposition
+#' 
+#' @description WriteMe
+#' @details WriteMe
+#'
+#' @param i integer, indivdiual index.
+#' @param baseline_pmf WriteMe
+#' @param eigenval WriteMe
+#' @param scores WriteMe
+#' @param eigenfun WriteMe
+#'
+#' @return WriteMe
+#' @export
+#'
+#' @examples
+build_predictive_pmf <- function(i, baseline_pmf, eigenval, scores, eigenfun) {
+    J <- dim(eigenfun)[2]
+    w <- baseline_pmf
+    for (j in 1:J) {
+        w <- w + sqrt(eigenval[j]) * scores[i,j] * eigenfun[,j]
+    }
+    return(w)
+}
+```
+
+```{r tests-build-predictive-pmf}
+test_that("build_predictive_pmf", {
+    # WriteMe
+    expect_true(TRUE)
+})
+```
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(flat_file = "dev/flat_additional.Rmd", vignette_name = NA)
+```
+
