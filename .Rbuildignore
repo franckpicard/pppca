@@ -1,1 +1,5 @@
 ^dev$
+^README\.Rmd$
+^pppca\.Rproj$
+^\.Rproj\.user$
+^draft$
