@@ -1,0 +1,62 @@
+---
+output: github_document
+bibliography: inst/REFERENCES.bib
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "figs/README-",
+  out.width = "100%"
+)
+```
+
+# Point Process Principal Component Analysis
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+> :warning: The `{pppca}` package is under final development stage (documentation, unit testing, etc.). You can already use it as the code is not expected to change much before its official release. :warning:
+
+The `{pppca}` R package provides an implementation of the Principal Component Analysis (PCA) framework for point process data.
+
+See Picard et al (2024) for more details about the method.
+
+## Authorship and license
+
+This package is developed by:
+
+- Franck Picard ([link](https://franckpicard.github.io/)|[ORCID](https://orcid.org/0000-0001-8084-5481))
+- Ghislain Durif ([link](https://gdurif.perso.math.cnrs.fr/)|[ORCID](https://orcid.org/0000-0003-2567-1401))
+
+The `{pppca}` package is available under the GPL>=3 license (except for the included `earthquake` dataset, see `?earthquake` or the [`LICENSE`](./LICENSE) file).
+
+## Installation
+
+You can install the development version of `{pppca}` from [GitHub](https://github.com/) with:
+```R
+# install.packages("remotes")
+remotes::install_github("franckpicard/pppca")
+```
+
+## Usage
+
+See the tutorial [below](#below) made with the vignette ["PCA for Point Processes with Earthquake Data"](vignettes/01-introduction-pppca.Rmd):
+```R
+vignette("01-introduction-pppca", package = "pppca")
+```
+
+## Note for developpers
+
+The `{pppca}` package is developed using the [`{fusen}`](https://thinkr-open.github.io/fusen/index.html) framework to generate R packages. Check the [`dev`](./dev) folder in the git repository for the sources and recipe.
+
+See the [`TODO.md`](./TODO.md) file in the git repository for information about ongoing development work.
+
+# Tutorial
+
+```{r vignette-intro}
+#| child: vignettes/01-introduction-pppca.Rmd
+```
