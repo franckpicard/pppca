@@ -1,15 +1,40 @@
 ---
 title: "PCA for Point Processes with Earthquake Data"
 date: "`r Sys.Date()`"
-author:
-    - Franck Picard
-    - Ghislain Durif
+author: "Franck Picard, Ghislain Durif"
 output: html_document
 editor_options: 
     chunk_output_type: console
-bibliography: references.bib
-toc: true
+bibliography: "`r system.file('REFERENCES.bib', package='pppca')`"
 ---
+
+<!-- {fusen} related framework -->
+
+```{r development-inflate, eval=FALSE}
+# Keep eval=FALSE to avoid infinite loop in case you hit the knit button
+# Execute in the console directly
+fusen::inflate(
+    flat_file = "dev/flat_full.Rmd", 
+    vignette_name = 
+        c("PCA for Point Processes with Earthquake Data" = 
+              "01-introduction PPPCA"),
+    open_vignette = FALSE,
+    overwrite = "yes",
+    check = FALSE
+)
+```
+
+```{r development-req, include=FALSE}
+# list package requirements for {fusen} builder
+library(testthat)
+```
+
+```{r development-load}
+# Load already included functions if relevant for {fusen} builder
+pkgload::load_all(export_all = FALSE)
+```
+
+<!-- knitr setup -->
 
 ```{r knitr_setup, include = FALSE}
 knitr::opts_chunk$set(
@@ -19,23 +44,17 @@ knitr::opts_chunk$set(
   warning = FALSE,
   eval = TRUE,
   cache = TRUE,
-  fig.align = "center"
+  fig.align = "center",
+  out.width = "100%"
 )
 ```
 
-```{r development-req, include=FALSE}
-library(testthat)
-```
-
-```{r development-load}
-# Load already included functions if relevant
-pkgload::load_all(export_all = FALSE)
-```
+<!-- vignette setup -->
 
 ```{r vignette-setup, include=FALSE}
 library(ggplot2)
 library(ggpubr)
-library(purrr)
+# library(purrr)
 # library(wesanderson)
 my_theme <- function() {
   theme(   
@@ -57,52 +76,55 @@ my_theme <- function() {
 }
 ```
 
-*WriteMe*: short intro + reference
+## pppca package
 
-```{r requirements}
-library(pppca)
-```
-
-```{r preliminary_computing, include=FALSE}
-earhtquake_num <- lapply(earthquake, as.numeric)
-Jmax <- 50
-res <- pppca(earthquake_num, Jmax)
-```
-
-## Authorship and license
-
-This package is developed by:
-
-- Franck Picard ([link](https://franckpicard.github.io/)|[ORCID](https://orcid.org/0000-0001-8084-5481))
-- Ghislain Durif ([link](https://gdurif.perso.math.cnrs.fr/)|[ORCID](https://orcid.org/0000-0003-2567-1401))
+In this document, you will find a tutorial about using the `{pppca}` package that implement Principal Component Analysis for point process data.
 
 ```{r function-package}
 #' @name pppca-package
+#' @rdname pppca-package
 #' @title Point Process Principal Component Analysis
 #' 
 #' @description
 #' Principal Component Analysis (PCA) for dimension reduction and variance 
-#' decomposition in point process data
+#' decomposition of point process data
 #' 
 #' @details
-#' WriteMe
+#' The Principal Component Analysis for Point Process data is based on the 
+#' Karhunen–Loève decomposition of the empirical *cumulative mass functions*.
+#' 
+#' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
+#' with Earthquake Data" for more details:
+#' `vignette("01-introduction-pppca", package = "pppca")`
 #' 
 #' @author
-#' - Franck Picard ([link](https://franckpicard.github.io/)|[ORCID](https://orcid.org/0000-0001-8084-5481))
-#' - Ghislain Durif ([link](https://gdurif.perso.math.cnrs.fr/)|[ORCID](https://orcid.org/0000-0003-2567-1401))
-#' 
-#' @description
+#' - Franck Picard ([link](https://franckpicard.github.io/)|
+#'   [ORCID](https://orcid.org/0000-0001-8084-5481))
+#' - Ghislain Durif ([link](https://gdurif.perso.math.cnrs.fr/)|
+#'   [ORCID](https://orcid.org/0000-0003-2567-1401))
+#'
+#' @references
+#' Picard, Franck, Vincent Rivoirard, Angelina Roche, and Victor 
+#' Panaretos. 2024. “PCA for Point Processes.” arXiv. 
+#' \doi{10.48550/arXiv.2404.19661}.
 "_PACKAGE"
 ```
 
-The `{pppca}` package is available under *FixMe* license.
+```{r preliminary_computing, include=FALSE}
+earthquake_num <- lapply(earthquake, as.numeric)
+Jmax <- 50
+res <- pppca(earthquake_num, Jmax, mc.cores = 1)
+```
 
 ## Data
 
 The data were obtained from the Kandilli Observatory and Earthquakes Research Institute at Boğaziçi University^[<http://www.koeri.boun.edu.tr/sismo/2/earthquake-catalog/>]. The dataset comprises earthquake occurrences in Turkey and neighboring regions of Greece, recorded between January 2013 and January 2023, spanning 1181 cities. In recent years, the Gulf of Gökova in Southwest Turkey has witnessed two significant seismic events: the Bodrum earthquake on July 20, 2017 (magnitude 6.6, also felt on the Greek island of Kos), and the Aegean Sea earthquake on November 1st, 2020, with a moment magnitude of 7.0 (the highest magnitude observed during the period). In the following, we illustrate how our framework can be employed to investigate the fine-scale dynamics of earthquake occurrences in the region, focusing on the 195 cities that experienced more than two earthquakes over the specified period.
 
+> **Important:** per its original licensing, this dataset should be used only for scientific and non-commerical purposes. Upon use of this dataset, proper attribution should be given to B.U. KOERI-RETMC (Boğaziçi University Kandilli Observatory and Earthquake Research Institute - Regional Earthquake-Tsunami Monitoring Center) in scientific articles and general purpose reports by referencing the KOERI Catalog citation.
+
 ```{r function-data}
 #' Earthquake occurrence dataset
+#' @rdname data
 #' 
 #' @description
 #' Earthquake occurrence in several locations in Turkey and neighboring regions 
@@ -122,6 +144,13 @@ The data were obtained from the Kandilli Observatory and Earthquakes Research In
 #' Only the records for the 195 cities that experienced more than two 
 #' earthquakes over the specified period are available in this dataset.
 #'
+#' **Important:** per its original licensing, this dataset should be used 
+#' only for scientific and non-commerical purposes. Upon use of this dataset, 
+#' proper attribution should be given to B.U. KOERI-RETMC (Boğaziçi University  
+#' Kandilli Observatory and Earthquake Research Institute - Regional 
+#' Earthquake-Tsunami Monitoring Center) in scientific articles and general 
+#' purpose reports by referencing the KOERI Catalog citation.
+#'
 #' @format ## `earthquake`
 #' A list containing vectors of earthquake occurrence date for 195 locations.
 #'
@@ -130,10 +159,11 @@ The data were obtained from the Kandilli Observatory and Earthquakes Research In
 #' Center) <http://www.koeri.boun.edu.tr/sismo/2/earthquake-catalog/>
 #' 
 #' @examples
+#' head(earthquake)
 "earthquake"
 ```
 
-```{r example-data}
+```{r data}
 head(earthquake)
 ```
 
@@ -153,40 +183,44 @@ $$
 # preformat data
 mat <- Reduce("rbind", lapply(
     1:length(earthquake),
-    FUN = function(i) { data.frame(y=i, x=earthquake[[i]]) }
+    FUN = function(i) { data.frame(y = i, x = earthquake[[i]]) }
 ))
 ## earthquake occurrences
-gg1 <- ggplot(mat, aes(x=x, y=y)) + geom_point(size=0.001) + my_theme() + 
-    xlab("Date") + 
-    ylab("City") + 
-    theme(
-        axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()) + 
+gg1 <- ggplot(mat, aes(x=x, y=y)) + 
     geom_vline(
         xintercept = as.POSIXct("2017.07.16", format = "%Y.%m.%d"), 
         color = "gray") +
     geom_vline(
         xintercept = as.POSIXct("2020.11.01", format = "%Y.%m.%d"),
-        color = "gray") 
+        color = "gray") +
+    geom_point(size=0.001) +
+    xlab("Date") + ylab("City") + 
+    theme(
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank()) + 
+    my_theme()
 
 ## PMF for the first 50 cities in the dataset
-pmf <- get_pmf(earthquake)
+pmf <- get_empirical_pmf(earthquake)
 mat <- Reduce("rbind", lapply(1:50, FUN = function(i) {
     data.frame(
         city = names(pmf)[i], date = as.POSIXct(res$grid[-1]), pmf = pmf[[i]]
     )
 }))
 
-gg2 <- ggplot(mat, aes(x=date, y=pmf, group=city)) + geom_step() + my_theme() + 
-    xlab("Date") + 
-    ylab("Cumulative Mass Function") + 
-    theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) + 
+gg2 <- ggplot(mat, aes(x=date, y=pmf, group=city)) + 
     geom_vline(
         xintercept = as.POSIXct("2017.07.16", format = "%Y.%m.%d"),
         color = "gray") +
     geom_vline(
         xintercept = as.POSIXct("2020.11.01", format = "%Y.%m.%d"), 
-        color = "gray")
+        color = "gray") +
+    geom_step(aes(col = city), alpha = 0.6) + 
+    xlab("Date") + 
+    ylab("Cumulative Mass Function") + 
+    theme(axis.text.y = element_blank(), axis.ticks.y = element_blank()) + 
+    my_theme() +
+    theme(legend.position = "none")
 
 ## combine plots
 ggarrange(
@@ -200,8 +234,9 @@ ggarrange(
 
 You can compute the empirical cumulative probability mass function (PMF) with the `get_empirical_pmf()` function (c.f. previous figure):
 
-```{r function-empirical-pmf}
+```{r function-get_empirical_pmf}
 #' Empirical cumulative probability mass function
+#' @filename empirical
 #' 
 #' @description
 #' Compute the empirical cumulative mass function (PMF) for each realization of 
@@ -213,9 +248,8 @@ You can compute the empirical cumulative probability mass function (PMF) with th
 #' occurrences.
 #' 
 #' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
-#' with Earthquake Data" (with
-#' `vignette("pca-for-point-processes-with-earthquake-data", package = "pppca")`
-#' ) for more details.
+#' with Earthquake Data" for more details:
+#' `vignette("01-introduction-pppca", package = "pppca")`
 #' 
 #' @references
 #' Picard, Franck, Vincent Rivoirard, Angelina Roche, and Victor 
@@ -232,7 +266,7 @@ You can compute the empirical cumulative probability mass function (PMF) with th
 #' @export
 #' 
 #' @importFrom parallel mclapply
-#' @importFrom parallely availableCores
+#' @importFrom parallelly availableCores
 #'
 #' @examples
 get_empirical_pmf <- function(PP, mc.cores = parallelly::availableCores()) {
@@ -250,11 +284,11 @@ get_empirical_pmf <- function(PP, mc.cores = parallelly::availableCores()) {
 }
 ```
 
-```{r examples-empirical-pmf}
+```{r examples-get_empirical_pmf}
 emp_pmf <- get_empirical_pmf(earthquake)
 ```
 
-```{r tests-empirical-pmf}
+```{r tests-get_empirical_pmf}
 test_that("get_empirical_pmf", {
     # WriteMe
     expect_true(TRUE)
@@ -265,8 +299,9 @@ test_that("get_empirical_pmf", {
 
 We can also compute the empirical intensity function of a point process realization, which is the numerical derivative of the empirical PMF (c.f. [previously](#empirical-probability-mass-function)), with the `get_empirical_intensity()` function:
 
-```{r function-empirical-intensity}
+```{r function-get_empirical_intensity}
 #' Empirical intensity function
+#' @filename empirical
 #' 
 #' @description
 #' Compute the empirical intensity for each realization of the point process.
@@ -277,9 +312,8 @@ We can also compute the empirical intensity function of a point process realizat
 #' occurrences.
 #' 
 #' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
-#' with Earthquake Data" (with
-#' `vignette("pca-for-point-processes-with-earthquake-data", package = "pppca")`
-#' ) for more details.
+#' with Earthquake Data" for more details:
+#' `vignette("01-introduction-pppca", package = "pppca")`
 #' 
 #' @references
 #' Picard, Franck, Vincent Rivoirard, Angelina Roche, and Victor 
@@ -296,21 +330,22 @@ We can also compute the empirical intensity function of a point process realizat
 #' @export
 #' 
 #' @importFrom parallel mclapply
-#' @importFrom parallely availableCores
+#' @importFrom parallelly availableCores
 #'
 #' @examples
-get_empirical_intensity <- function(PP, mc.cores = parallelly::availableCores()) {
+get_empirical_intensity <- function(
+        PP, mc.cores = parallelly::availableCores()) {
     pmf <- get_empirical_pmf(PP)
     int <- mclapply(pmf, FUN = function(x){diff(x)}, mc.cores = mc.cores)
     return(int)
 }
 ```
 
-```{r examples-empirical-intensity}
+```{r examples-get_empirical_intensity}
 emp_int <- get_empirical_intensity(earthquake)
 ```
 
-```{r tests-empirical-intensity}
+```{r tests-get_empirical_intensity}
 test_that("get_empirical_intensity", {
     # WriteMe
     expect_true(TRUE)
@@ -332,27 +367,22 @@ The Point Process PCA (PPPCA) can be computed using the `pppca()` function:
 
 ```{r function-pppca}
 #' Point Process Principal Component Analysis (PPPCA)
+#' @filename pppca
 #' 
 #' @description
 #' Principal Component Analysis for Point Process data.
 #' 
 #' @details
 #' The Principal Component Analysis for Point Process data is based on the 
-#' Karhunen–Loève decomposition of the empirical *cumulative mass functions*:
-#' $$
-#' \Pi_i([0, t]) \approx W([0, t])+ \sum_{j = 1}^J\sqrt{\widehat{\lambda}_j} \widehat{\xi}_{i, j} \widehat{\eta}_{j}(t), \qquad t\geq 0
-#' $$
+#' Karhunen–Loève decomposition of the empirical *cumulative mass functions*.
 #' 
-#' where $W(\cdot)$ is the baseline function, $(\widehat{\lambda}_j)_{j}$ are the eigenvalues, $(\widehat{\xi}_{i, j})_{i,j}$ are the individual scores over each component, and $(\widehat{\eta}_{j}(\cdot))_j$ are the corresponding eigenfunctions.
+#' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
+#' with Earthquake Data" for more details:
+#' `vignette("01-introduction-pppca", package = "pppca")`
 #' 
 #' **Important:** if the point process occurrences are not numerical values 
 #' (e.g. dates), they should be converted to numerical values before using 
 #' this function.
-#' 
-#' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
-#' with Earthquake Data" (with
-#' `vignette("pca-for-point-processes-with-earthquake-data", package = "pppca")`
-#' ) for more details.
 #' 
 #' @references
 #' Picard, Franck, Vincent Rivoirard, Angelina Roche, and Victor 
@@ -378,8 +408,9 @@ The Point Process PCA (PPPCA) can be computed using the `pppca()` function:
 #'   principal component (in columns).
 #' @export
 #' 
-#' @importFrom parallel mclapply
-#' @importFrom parallely availableCores
+#' @importFrom graphics hist
+#' @importFrom parallel mcmapply
+#' @importFrom parallelly availableCores
 #' @importFrom RSpectra eigs_sym
 #'
 #' @examples
@@ -459,7 +490,7 @@ gg1 <- ggplot(dd, aes(x = j, y = percentvar)) +
     xlab("Dimension") + ylab("%variance (log)") +
     my_theme()
 
-dd <- data.frame(axis1 = res$scores[,1], nb_occ = sapply(PP, length))
+dd <- data.frame(axis1 = res$scores[,1], nb_occ = sapply(earthquake, length))
 
 gg2 <- ggplot(dd, aes(x = nb_occ, y = axis1)) + 
     geom_point(size = 0.5) + 
@@ -483,15 +514,15 @@ Also, scores on Axis 1 ($(\widehat\xi_{i1})_i$) directly correspond to the total
 dd <- data.frame(x = res$grid[-1], y = res$eigenfun[,1])
 
 ggplot(dd, aes(x = x, y = y)) + 
-    geom_line() + geom_hline(yintercept = 0, linetype = 2) +
     geom_vline(
         xintercept = as.POSIXct("2017.07.16", format = "%Y.%m.%d"),
         color = "gray") +
     geom_vline(
         xintercept = as.POSIXct("2020.11.01", format = "%Y.%m.%d"), 
         color = "gray") +
-    xlab("Date") +
-    ylab(expression(eta[1])) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    geom_line() + 
+    xlab("Date") + ylab(expression(eta[1])) +
     my_theme()
 ```
 
@@ -499,8 +530,9 @@ ggplot(dd, aes(x = x, y = y)) +
 
 From the PPPCA decomposition, we can reconstruct the predicted empirical PMF using the Karhunen–Loève decomposition (c.f. [previously](#pca-for-point-processes)) by using the `get_predicted_pmf()` function:
 
-```{r function-predicted-pmf}
+```{r function-get_predicted_pmf}
 #' Predicted cumulative probability mass function
+#' @filename predicted
 #' 
 #' @description
 #' Compute the predicted cumulative mass function (PMF) for each realization 
@@ -513,9 +545,8 @@ From the PPPCA decomposition, we can reconstruct the predicted empirical PMF usi
 #' occurrences.
 #' 
 #' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
-#' with Earthquake Data" (with
-#' `vignette("pca-for-point-processes-with-earthquake-data", package = "pppca")`
-#' ) for more details.
+#' with Earthquake Data" for more details:
+#' `vignette("01-introduction-pppca", package = "pppca")`
 #' 
 #' @references
 #' Picard, Franck, Vincent Rivoirard, Angelina Roche, and Victor 
@@ -525,13 +556,7 @@ From the PPPCA decomposition, we can reconstruct the predicted empirical PMF usi
 #' @seealso [pppca::pppca()], [pppca::get_predicted_intensity()]
 #'
 #' @inheritParams pppca
-#' @param eigenval numerical vector containing eigenvalues for each principal 
-#' component.
-#' @param scores data frame of individual scores (in rows) for each principal 
-#' component (in columns).
-#' @param eigenfun data frame containing the values of the eigenfunctions for 
-#' each principal components (in columns) over the occurrence `grid` 
-#' (in rows).
+#' @inheritParams build_predicted_pmf
 #' @inheritParams parallel::mclapply
 #'
 #' @return a matrix containing the values of the predicted PMF for 
@@ -539,8 +564,8 @@ From the PPPCA decomposition, we can reconstruct the predicted empirical PMF usi
 #' union of all occurrences of all point process realizations (in rows).
 #' @export
 #' 
-#' @importFrom parallel mclapply
-#' @importFrom parallely availableCores
+#' @importFrom parallel mclapply mcmapply
+#' @importFrom parallelly availableCores
 #'
 #' @examples
 get_predicted_pmf <- function(
@@ -561,19 +586,19 @@ get_predicted_pmf <- function(
 }
 ```
 
-```{r examples-predicted-pmf}
+```{r examples-get_predicted_pmf}
 # conversion of dates to numerical values
 earthquake_num <- lapply(earthquake, as.numeric)
 # apply principal component analysis to point process data
 pppca_res <- pppca(earthquake_num, Jmax = 50, mc.cores = 1)
 # reconstruct predicted PMF
 pred_pmf <- get_predicted_pmf(
-    earthquake, pppca_res$eigenval, pppca_res$eigenval, pppca_res$scores, 
+    earthquake, pppca_res$eigenval, pppca_res$scores, 
     pppca_res$eigenfun, mc.cores = 1
 )
 ```
 
-```{r tests-predicted-pmf}
+```{r tests-get_predicted_pmf}
 test_that("get_predicted_pmf", {
     # WriteMe
     expect_true(TRUE)
@@ -586,6 +611,7 @@ We can also compute the predicted intensity function of a point process realizat
 
 ```{r function-predicted-intensity}
 #' Predicted cumulative probability mass function
+#' @filename predicted
 #' 
 #' @description
 #' Compute the predicted cumulative mass function (PMF) for each realization 
@@ -598,9 +624,8 @@ We can also compute the predicted intensity function of a point process realizat
 #' occurrences.
 #' 
 #' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
-#' with Earthquake Data" (with
-#' `vignette("pca-for-point-processes-with-earthquake-data", package = "pppca")`
-#' ) for more details.
+#' with Earthquake Data" for more details:
+#' `vignette("01-introduction-pppca", package = "pppca")`
 #' 
 #' @references
 #' Picard, Franck, Vincent Rivoirard, Angelina Roche, and Victor 
@@ -617,7 +642,7 @@ We can also compute the predicted intensity function of a point process realizat
 #' @export
 #' 
 #' @importFrom parallel mclapply
-#' @importFrom parallely availableCores
+#' @importFrom parallelly availableCores
 #'
 #' @examples
 get_predicted_intensity <- function(
@@ -636,7 +661,7 @@ earthquake_num <- lapply(earthquake, as.numeric)
 pppca_res <- pppca(earthquake_num, Jmax = 50, mc.cores = 1)
 # reconstruct predicted intensity function
 pred_pmf <- get_predicted_intensity(
-    earthquake, pppca_res$eigenval, pppca_res$eigenval, pppca_res$scores, 
+    earthquake, pppca_res$eigenval, pppca_res$scores, 
     pppca_res$eigenfun, mc.cores = 1
 )
 ```
@@ -657,17 +682,22 @@ Consequently, we focus on the variations of the estimated eigenfunctions $(\wide
 ```{r interpret_scores, echo = FALSE, fig.cap="Individual location scores for components 2 and 3 (left) and components 4 and 5 (right)."}
 j <- 2
 d <- data.frame(x = res$scores[, j], y = res$scores[, j + 1])
-gg1 <- ggplot(d, aes(x = x, y = y, label = names(PP))) + 
-    geom_point(size = 0.5) + geom_hline(yintercept = 0, linetype = 2) + 
+gg1 <- ggplot(d, aes(x = x, y = y, label = names(earthquake))) + 
     geom_vline(xintercept = 0, linetype = 2) + 
+    geom_hline(yintercept = 0, linetype = 2) + 
+    geom_point(size = 0.5) + 
     geom_text(
-        aes(label = ifelse(x>2, names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(x>2, names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     geom_text(
-        aes(label = ifelse(x<(-2), names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(x<(-2), names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     geom_text(
-        aes(label = ifelse(y>1, names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(y>1, names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     geom_text(
-        aes(label = ifelse(y<(-2), names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(y<(-2), names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     xlab(expression(xi[2])) +
     ylab(expression(xi[3])) +
     xlim(-10, 10) + 
@@ -675,26 +705,30 @@ gg1 <- ggplot(d, aes(x = x, y = y, label = names(PP))) +
 
 j <- 4
 d <- data.frame(x = res$scores[, j], y = res$scores[, j + 1])
-gg2 <- ggplot(d, aes(x = x, y = y, label = names(PP))) + 
-    geom_point(size = 0.5) + 
+gg2 <- ggplot(d, aes(x = x, y = y, label = names(earthquake))) + 
     geom_hline(yintercept = 0, linetype = 2) + 
     geom_vline(xintercept = 0, linetype = 2) + 
+    geom_point(size = 0.5) + 
     geom_text(
-        aes(label = ifelse(x>4, names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(x>4, names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     geom_text(
-        aes(label = ifelse(x<(-2), names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(x<(-2), names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     geom_text(
-        aes(label = ifelse(y>1, names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(y>1, names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     geom_text(
-        aes(label = ifelse(y<(-2), names(PP),'')), nudge_y = 0.2, size = 2) +
+        aes(label = ifelse(y<(-2), names(earthquake),'')), nudge_y = 0.2, 
+        size = 2) +
     xlab(expression(xi[4])) +
     ylab(expression(xi[5])) +
     xlim(-10, 10) + 
     my_theme()
 
 ggarrange(
-    gg1 + theme(plot.margin = unit(c(0,0,0,0), 'mm')),
-    gg2 + theme(plot.margin = unit(c(0,0,0,0), 'mm')),
+    gg1 + theme(plot.margin = unit(c(0,2,0,0), 'mm')),
+    gg2 + theme(plot.margin = unit(c(0,0,0,2), 'mm')),
     ncol = 2, nrow = 1
 )
 ```
@@ -706,57 +740,57 @@ Eigenfunctions can be interpreted as the basic components that drive the dynamic
 ```{r interpret_eigenfun, echo = FALSE, fig.cap="Values of the second, third, fourth and fifth eigenfunctions."}
 dd <- data.frame(x = res$grid[-1], y = res$eigenfun[,2])
 gg1 <- ggplot(dd, aes(x = x, y = y)) + 
-    geom_line() + geom_hline(yintercept = 0, linetype = 2) +
     geom_vline(
         xintercept = as.POSIXct("2017.07.16", format = "%Y.%m.%d"),
         color = "gray") +
     geom_vline(
         xintercept = as.POSIXct("2020.11.01", format = "%Y.%m.%d"), 
         color = "gray") +
-    xlab("Date") +
-    ylab(expression(eta[2])) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    geom_line() + 
+    xlab("Date") + ylab(expression(eta[2])) +
     theme(axis.text.y= element_text(angle = -90, vjust = 0.5, hjust = 1)) +
     my_theme()
 
 dd <- data.frame(x = res$grid[-1], y = res$eigenfun[,3])
 gg2 <- ggplot(dd, aes(x = x, y = y)) + 
-    geom_line() + geom_hline(yintercept = 0, linetype = 2) + 
     geom_vline(
         xintercept = as.POSIXct("2017.07.16", format = "%Y.%m.%d"),
         color = "gray") +
     geom_vline(
         xintercept = as.POSIXct("2020.11.01", format = "%Y.%m.%d"), 
         color = "gray") +
-    xlab("Date") +
-    ylab(expression(eta[3]))+
+    geom_hline(yintercept = 0, linetype = 2) + 
+    geom_line() + 
+    xlab("Date") + ylab(expression(eta[3]))+
     theme(axis.text.y= element_text(angle = -90, vjust = 0.5, hjust = 1)) +
     my_theme()
 
 dd <- data.frame(x = res$grid[-1], y = res$eigenfun[,4])
 gg3 <- ggplot(dd, aes(x = x, y = y)) + 
-    geom_line() + geom_hline(yintercept = 0, linetype = 2) + 
     geom_vline(
         xintercept = as.POSIXct("2017.07.16", format = "%Y.%m.%d"),
         color = "gray") +
     geom_vline(
         xintercept = as.POSIXct("2020.11.01", format = "%Y.%m.%d"), 
         color = "gray") +
-    xlab("Date") +
-    ylab(expression(eta[4]))+
+    geom_hline(yintercept = 0, linetype = 2) + 
+    geom_line() + 
+    xlab("Date") + ylab(expression(eta[4]))+
     theme(axis.text.y= element_text(angle = -90, vjust = 0.5, hjust = 1)) +
     my_theme()
 
 dd <- data.frame(x = res$grid[-1], y = res$eigenfun[,5])
 gg4 <- ggplot(dd, aes(x = x, y = y)) + 
-    geom_line() + geom_hline(yintercept = 0, linetype = 2) +
     geom_vline(
         xintercept = as.POSIXct("2017.07.16", format = "%Y.%m.%d"),
         color = "gray") +
     geom_vline(
         xintercept = as.POSIXct("2020.11.01", format = "%Y.%m.%d"), 
         color = "gray") +
-    xlab("Date") +
-    ylab(expression(eta[5])) +
+    geom_hline(yintercept = 0, linetype = 2) +
+    geom_line() + 
+    xlab("Date") + ylab(expression(eta[5])) +
     theme(axis.text.y= element_text(angle = -90, vjust = 0.5, hjust = 1)) +
     my_theme()
 
@@ -770,12 +804,3 @@ ggarrange(
 ```
 
 ## References
-
-```{r development-inflate, eval=FALSE}
-# Keep eval=FALSE to avoid infinite loop in case you hit the knit button
-# Execute in the console directly
-fusen::inflate(
-    flat_file = "dev/flat_full.Rmd", 
-    vignette_name = "PCA for Point Processes with Earthquake Data"
-)
-```
