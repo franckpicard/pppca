@@ -1,0 +1,24 @@
+This file list the copyright holders and licenses of the files included in 
+this package.
+
+## Earthquake dataset
+
+The `earthquake` dataset (provided by the file `data/earthquake.rda`) was 
+obtained from the Kandilli Observatory and Earthquakes Research Institute at 
+Boğaziçi University, Turkey 
+(<http://www.koeri.boun.edu.tr/sismo/2/earthquake-catalog/>).
+
+Per its original licensing, this dataset should be used only for scientific and 
+non-commerical purposes. Upon use of this dataset, proper attribution should be 
+given to B.U. KOERI-RETMC (Boğaziçi University Kandilli Observatory and 
+Earthquake Research Institute - Regional Earthquake-Tsunami Monitoring Center) 
+in scientific articles and general purpose reports by referencing the KOERI 
+Catalog citation.
+
+## Rest of the package
+
+The rest of the package files including source codes, documentation, etc. is 
+authored by Franck Picard and Ghislain Durif (from LBMC, ENS de Lyon, CNRS 
+UMR 5239, Inserm U1293, Université Claude Bernard Lyon 1, 69007, Lyon, France)
+and available under the GPL (>= 3) license.
+
