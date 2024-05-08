@@ -9,7 +9,6 @@
 > :warning: The `{pppca}` package is under final development stage
 > (documentation, unit testing, etc.). You can already use it as the
 > code is not expected to change much before its official release.
-> :warning:
 
 The `{pppca}` R package provides an implementation of the Principal
 Component Analysis (PCA) framework for point process data.
