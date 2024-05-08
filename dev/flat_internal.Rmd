@@ -5,36 +5,55 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r development, include=FALSE}
-library(testthat)
+<!-- {fusen} related framework -->
+
+```{r development-inflate, eval=FALSE}
+# Run but keep eval=FALSE to avoid infinite loop
+# Execute in the console directly
+fusen::inflate(
+    flat_file = "dev/flat_internal.Rmd", 
+    vignette_name = NA,
+    open_vignette = FALSE,
+    overwrite = "yes",
+    check = FALSE
+)
 ```
 
-```{r development-load}
-# Load already included functions if relevant
-pkgload::load_all(export_all = FALSE)
-```
 
-## Build predictive PMF from eigen decomposition
+## Build predicted PMF from eigen decomposition
 
-Karhunen–Loève decomposition
-
-```{r function-build-predictive-pmf}
-#' Build predictive PMF from Karhunen–Loève decomposition
+```{r function-build_predictive_pmf}
+#' Build predicted PMF
+#' @filename internal
+#' @keywords internal
 #' 
-#' @description WriteMe
-#' @details WriteMe
+#' @description Build individual predicted PMF from Karhunen–Loève 
+#' decomposition
+#' @details
+#' The Principal Component Analysis for Point Process data is based on the 
+#' Karhunen–Loève decomposition of the empirical *cumulative mass functions*.
+#' 
+#' See Picard et al (2024) or the tutorial vignette "PCA for Point Processes 
+#' with Earthquake Data" for more details:
+#' `vignette("01-introduction-pppca", package = "pppca")`
 #'
 #' @param i integer, indivdiual index.
-#' @param baseline_pmf WriteMe
-#' @param eigenval WriteMe
-#' @param scores WriteMe
-#' @param eigenfun WriteMe
+#' @param baseline_pmf numerical vector containing the values for the 
+#' baseline for PMF prediction.
+#' @param eigenval numerical vector containing eigenvalues for each principal 
+#' component.
+#' @param scores data frame of individual scores (in rows) for each principal 
+#' component (in columns).
+#' @param eigenfun data frame containing the values of the eigenfunctions for 
+#' each principal components (in columns) over the occurrence `grid` 
+#' (in rows).
 #'
-#' @return WriteMe
+#' @return numerical vector containing the values for the predicted PMF 
+#' function.
 #' @export
 #'
 #' @examples
-build_predictive_pmf <- function(i, baseline_pmf, eigenval, scores, eigenfun) {
+build_predicted_pmf <- function(i, baseline_pmf, eigenval, scores, eigenfun) {
     J <- dim(eigenfun)[2]
     w <- baseline_pmf
     for (j in 1:J) {
@@ -44,16 +63,9 @@ build_predictive_pmf <- function(i, baseline_pmf, eigenval, scores, eigenfun) {
 }
 ```
 
-```{r tests-build-predictive-pmf}
+```{r tests-build_predictive_pmf}
 test_that("build_predictive_pmf", {
     # WriteMe
     expect_true(TRUE)
 })
 ```
-
-```{r development-inflate, eval=FALSE}
-# Run but keep eval=FALSE to avoid infinite loop
-# Execute in the console directly
-fusen::inflate(flat_file = "dev/flat_additional.Rmd", vignette_name = NA)
-```
-

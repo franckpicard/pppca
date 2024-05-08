@@ -9,6 +9,8 @@ All commands that you use to use when developing packages...
 
 # First time just after creating the project
 
+## Metadata
+
 - Fill the following chunk to create the DESCRIPTION of your package
 
 ```{r dev-description, eval=FALSE}
@@ -38,30 +40,19 @@ fusen::fill_description(
     )
 )
 # Define License with use_*_license()
-usethis::use_mit_license("John Doe")
+usethis::use_gpl_license(version = 3)
 # Roxygen markdown
 usethis::use_roxygen_md()
 ```
 
-# All-in-one function to deploy publicly on GitHub
-
-Either use this GitHub all-in-one function or choose the steps one-by-one in the following sections.
-See `vignette("share-on-a-github-website", package = "fusen")` for more information.
-
-```{r, eval=FALSE}
-# _All-in-one share of your package and its documentation on GitHub
-fusen::init_share_on_github()
-```
-
-
-# Start using git
+## Start using git
 
 ```{r dev-git, eval=FALSE}
 # Deal with classical files to ignore
 usethis::git_vaccinate()
 ```
 
-# Set extra sources of documentation
+## Set extra sources of documentation
 
 ```{r dev-extra-doc, eval=FALSE}
 # README
@@ -73,23 +64,13 @@ usethis::use_readme_rmd()
 
 # Package development tools
 
-## Use once
-
-```{r dev-extra-req, eval=FALSE}
-# Pipe
-usethis::use_pipe()
-
-# package-level documentation
-usethis::use_package_doc()
-```
-
 ## Inflate package
 
 ```{r dev-inflate}
 fusen::inflate_all()
 ```
 
-## Use everytime needed
+## Documentation
 
 ```{r dev-doc, eval=FALSE}
 # Simulate package installation
@@ -98,6 +79,17 @@ pkgload::load_all()
 # Generate documentation and deal with dependencies
 attachment::att_amend_desc()
 ```
+
+```{r dev-vignette}
+devtools::build_vignettes()
+```
+
+```{r dev-readme}
+# generate README.md from README.Rmd
+devtools::build_readme()
+```
+
+## Tests and checks
 
 ```{r dev-check}
 # Test the package
