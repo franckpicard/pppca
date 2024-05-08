@@ -3,3 +3,8 @@
 ^pppca\.Rproj$
 ^\.Rproj\.user$
 ^draft$
+^LICENSE\.md$
+^doc$
+^Meta$
+^TODO\.
+^figs$
