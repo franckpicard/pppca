@@ -150,8 +150,8 @@ gg2 <- ggplot(mat, aes(x=date, y=pmf, group=city)) +
 
 ## combine plots
 ggarrange(
-    gg1 + theme(plot.margin = unit(c(0,2,0,0), 'mm')),
-    gg2 + theme(plot.margin = unit(c(0,0,0,2), 'mm')),
+    gg1 + theme(plot.margin = unit(c(0,2,0,2), 'mm')),
+    gg2 + theme(plot.margin = unit(c(0,2,0,2), 'mm')),
     ncol = 2, nrow = 1
 )
 ```
@@ -225,8 +225,8 @@ gg2 <- ggplot(dd, aes(x = nb_occ, y = axis1)) +
     my_theme()
 
 ggarrange(
-    gg1 + theme(plot.margin = unit(c(0,2,0,0), 'mm')),
-    gg2 + theme(plot.margin = unit(c(0,0,0,2), 'mm')),
+    gg1 + theme(plot.margin = unit(c(0,2,0,2), 'mm')),
+    gg2 + theme(plot.margin = unit(c(0,2,0,2), 'mm')),
     ncol = 2, nrow = 1
 )
 ```
@@ -339,8 +339,8 @@ gg2 <- ggplot(d, aes(x = x, y = y, label = names(earthquake))) +
     my_theme()
 
 ggarrange(
-    gg1 + theme(plot.margin = unit(c(0,2,0,0), 'mm')),
-    gg2 + theme(plot.margin = unit(c(0,0,0,2), 'mm')),
+    gg1 + theme(plot.margin = unit(c(0,2,0,2), 'mm')),
+    gg2 + theme(plot.margin = unit(c(0,2,0,2), 'mm')),
     ncol = 2, nrow = 1
 )
 ```
