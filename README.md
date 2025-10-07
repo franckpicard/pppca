@@ -285,7 +285,7 @@ earthquake_num <- lapply(earthquake, as.numeric)
 # apply principal component analysis to point process data
 pppca_res <- pppca(earthquake_num, Jmax = 50, mc.cores = 1)
 # reconstruct predicted intensity function
-pred_pmf <- get_predicted_intensity(
+pred_int <- get_predicted_intensity(
     earthquake, pppca_res$eigenval, pppca_res$scores, 
     pppca_res$eigenfun, mc.cores = 1
 )
