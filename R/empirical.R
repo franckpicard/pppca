@@ -36,7 +36,7 @@
 #' emp_int <- get_empirical_intensity(earthquake)
 get_empirical_intensity <- function(
         PP, mc.cores = parallelly::availableCores()) {
-    pmf <- get_empirical_pmf(PP)
+    pmf <- get_empirical_pmf(PP, mc.cores = mc.cores)
     int <- mclapply(pmf, FUN = function(x){diff(x)}, mc.cores = mc.cores)
     return(int)
 }
